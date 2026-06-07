@@ -14,7 +14,7 @@ function getProfileByName(string $username) {
     // Request lookup by username
     $res = httpGet("https://api.mojang.com/users/profiles/minecraft/{$username}");
     if ($res->code !== 200) {
-        die(json_encode(array('error' => "No profile with username '{$username}'.")));
+        die(json_encode(array('error' => "{$res->text} No profile with username '{$username}'.")));
     }
 
     $json = json_decode($res->text);
