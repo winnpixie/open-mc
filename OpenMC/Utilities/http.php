@@ -25,7 +25,7 @@ function httpGet(string $url)
 
     $val = new HttpResponse($res, (int) curl_getinfo($req, CURLINFO_HTTP_CODE));
 
-    curl_close($res);
+    curl_close($req);
     return $val;
 }
 
