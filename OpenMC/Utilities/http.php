@@ -4,8 +4,6 @@ function httpGet(string $url)
 {
     $req = curl_init($url);
 
-    $cv = fopen("file:///tmp/curl", "w+");
-
     curl_setopt_array($req, array(
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_CONNECTTIMEOUT => 15,
@@ -18,7 +16,6 @@ function httpGet(string $url)
         CURLOPT_HTTPHEADER => array(
             'User-Agent' => 'PHP cURL (winnpixie/open-mc)'
         ),
-        CURLOPT_STDERR => $cv
     ));
 
     $res = curl_exec($req);
@@ -26,8 +23,6 @@ function httpGet(string $url)
         $req_err = curl_error($req);
         trigger_error($req_err);
     }
-
-    fclose($cv);
 
     $val = new HttpResponse($res, (int) curl_getinfo($req, CURLINFO_HTTP_CODE));
 
