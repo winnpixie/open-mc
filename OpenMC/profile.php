@@ -1,27 +1,30 @@
 <?php namespace OpenMC;
-require_once ('Utilities/http.php');
 
-use function OpenMC\Utilities\http_get;
+require_once 'Utilities/http.php';
+
+use function OpenMC\Utilities\httpGet;
 
 class Profile {
     public $id = '';
     public $fullId = '';
     public $username = '';
     public $usernameHistory = array();
-    public $hasOptiFineCape = FALSE;
+    public $hasOptiFineCape = false;
 
-    function __construct(string $id, string $username) {
+    public function __construct(string $id, string $username) {
         $this->id = $id;
         $this->fullId = preg_replace('/(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})/', '$1-$2-$3-$4-$5', $id);
         $this->username = $username;
 
         $this->getUsernameHistory();
         
-        $this->hasOptiFineCape = http_get("http://s.optifine.net/capes/{$this->username}.png")->code === 200;
+        $this->hasOptiFineCape = httpGet("http://s.optifine.net/capes/{$this->username}.png")->code === 200;
     }
 
-    private function sort_username_history($e1, $e2) {
-        if (!isset($e1->{'changedToAt'}) || !isset($e2->{'changedToAt'})) return 1;
+    private function sortUsernameHistory($e1, $e2) {
+        if (!isset($e1->{'changedToAt'}) || !isset($e2->{'changedToAt'})) {
+            return 1;
+        }
     
         if ($e1->{'changedToAt'} < $e2->{'changedToAt'}) {
             return 1;
@@ -31,7 +34,7 @@ class Profile {
     }
 
     private function getUsernameHistory() {
-        $res = http_get("https://api.mojang.com/user/profiles/{$this->id}/names");
+        $res = httpGet("https://api.mojang.com/user/profiles/{$this->id}/names");
         if ($res->code !== 200) {
             return;
         }
@@ -41,7 +44,7 @@ class Profile {
             return;
         }
         
-        usort($json, array($this, 'sort_username_history'));
+        usort($json, array($this, 'sortUsernameHistory'));
         $this->usernameHistory = $json;
     }
 }

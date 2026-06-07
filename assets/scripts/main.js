@@ -1,21 +1,21 @@
-(function () {
+(function (global) {
     'use strict';
 
-    window.onBodyLoad = function () {
+    global.onBodyLoad = function () {
         // This might not be necessary but I'm not taking chances.
-        document.getElementById('title-link').href = window.location.pathname;
+        document.getElementById('title-link').href = global.location.pathname;
 
         // Attempt to detect an on-load query that is already present
         let query = getQueries();
         if (query.length == 0) return;
 
         let form = document.forms[0];
-        form.q.value = decodeURIComponent(query['q']);
+        form.q.value = decodeURIComponent(query.q);
         resolve(form, null);
     };
 
     // Queries the profile resolver 
-    window.resolve = function (form, event) {
+    global.resolve = function (form, event) {
         /* BEGIN Text Resets */
         document.title = 'open-mc';
 
@@ -31,8 +31,11 @@
         /* END Text Resets */
 
         // Send a request to our profile resolver script
-        window.fetch(`OpenMC/resolve.php?q=${encodeURIComponent(form.q.value)}`)
-            .then(res => res.json().then(profile => {
+        global.fetch(`OpenMC/resolve.php?q=${encodeURIComponent(form.q.value)}`)
+            .then(res => {
+                return res.json();
+            })
+            .then(profile => {
                 if (profile.error) { // Uh oh
                     displayError(profile.error);
                     return;
@@ -43,16 +46,16 @@
 
                 buildProfileInformation(profile).forEach(row => infoTable.appendChild(row));
                 buildHistoryTable(profile.usernameHistory).forEach(row => historyTable.appendChild(row));
-            }));
+            });
 
         if (event != null) { // This was called using the actual form, not from a URL bar query
             form.q.select();
             event.preventDefault();
 
             // Update the URL-bar with our current query
-            let url = new URL(window.location);
+            let url = new URL(global.location);
             url.searchParams.set('q', form.q.value);
-            window.history.pushState({}, `${form.q.value} | open-mc`, url);
+            global.history.pushState({}, `${form.q.value} | open-mc`, url);
         }
 
         return false;
@@ -127,7 +130,7 @@
     };
 
     // TODO: Possibly use for quick profile sharing?
-    window.copyToClipboard = function (text) {
+    global.copyToClipboard = function (text) {
         navigator.clipboard.writeText(text)
             .then(() => { }, (err) => { console.error(err); });
     };
@@ -163,14 +166,15 @@
     const getQueries = function () {
         if (!document.location.search.startsWith('?')) return [];
 
-        let map = [];
-        for (let query of window.location.search.substring(1).split('&')) {
+        let map = {};
+        for (let query of global.location.search.substring(1).split('&')) {
             let data = query.split('=', 2);
 
-            map.push(data[0]);
-            map[data[0]] = data.length > 1 ? data[1] : '';
+            Object.defineProperty(map, data[0], {
+                value: data.length > 1 ? data[1] : ''
+            });
         }
 
         return map;
     };
-})();
+})(window);

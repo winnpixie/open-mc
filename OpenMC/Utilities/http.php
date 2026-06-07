@@ -1,28 +1,32 @@
 <?php namespace OpenMC\Utilities;
-function http_get(string $url)
-{
-    $ch = curl_init($url);
 
-    curl_setopt_array($ch, array(
-        CURLOPT_RETURNTRANSFER => TRUE,
-        CURLOPT_HEADER => FALSE,
-        CURLOPT_SSL_VERIFYPEER => FALSE,
-        CURLOPT_SSL_VERIFYHOST => FALSE,
-        CURLOPT_FOLLOWLOCATION => TRUE,
+function httpGet(string $url)
+{
+    $req = curl_init($url);
+
+    curl_setopt_array($req, array(
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_CONNECTTIMEOUT => 15,
+        CURLOPT_TIMEOUT => 15,
+        CURLOPT_HEADER => true,
+        CURLOPT_SSL_VERIFYPEER => false,
+        CURLOPT_SSL_VERIFYHOST => false,
+        CURLOPT_FOLLOWLOCATION => true,
         CURLOPT_HTTPHEADER => array(
             'User-Agent' => 'PHP cURL (winnpixie/open-mc)'
         )
     ));
 
-    $result = '';
-    if (!($result = curl_exec($ch))) {
-        trigger_error(curl_error($ch));
+    $res = curl_exec($req);
+    if (curl_errno($req)) {
+        $req_err = curl_error($req);
+        trigger_error($req_err);
     }
 
-    $res = new HttpResponse($result, (int) curl_getinfo($ch, CURLINFO_HTTP_CODE));
+    $val = new HttpResponse($res, (int) curl_getinfo($req, CURLINFO_HTTP_CODE));
 
-    curl_close($ch);
-    return $res;
+    curl_close($res);
+    return $val;
 }
 
 class HttpResponse {
