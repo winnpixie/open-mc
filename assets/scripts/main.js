@@ -1,26 +1,25 @@
 (function () {
     'use strict';
 
-    window.onBodyLoad = () => {
+    window.onBodyLoad = function () {
         // This might not be necessary but I'm not taking chances.
         document.getElementById('title-link').href = window.location.pathname;
 
-        // Attempt to detect a on-load query that is already present
-        let query = getQuery();
-        if (query.length > 0) {
-            let form = document.forms[0];
-            form.q.value = decodeURIComponent(query['q']);
+        // Attempt to detect an on-load query that is already present
+        let query = getQueries();
+        if (query.length == 0) return;
 
-            resolve(form, null);
-        }
+        let form = document.forms[0];
+        form.q.value = decodeURIComponent(query['q']);
+        resolve(form, null);
     };
 
     // Queries the profile resolver 
-    window.resolve = (form, event) => {
+    window.resolve = function (form, event) {
         /* BEGIN Text Resets */
         document.title = 'open-mc';
 
-        displayError('', true);
+        displayError('');
 
         let profileTitle = document.getElementById('profile-title');
 
@@ -31,11 +30,11 @@
         historyTable.innerHTML = '<tr><th>Username History</th></tr>';
         /* END Text Resets */
 
-        // Send a request to the our profile resolver script
-        window.fetch(`OpenMC/resolver.php?q=${encodeURIComponent(form.q.value)}`)
+        // Send a request to our profile resolver script
+        window.fetch(`OpenMC/resolve.php?q=${encodeURIComponent(form.q.value)}`)
             .then(res => res.json().then(profile => {
                 if (profile.error) { // Uh oh
-                    displayError(profile.error, false);
+                    displayError(profile.error);
                     return;
                 }
 
@@ -59,7 +58,7 @@
         return false;
     };
 
-    const buildProfileInformation = (profile) => {
+    const buildProfileInformation = function (profile) {
         // UUID
         let uuidRow = document.createElement('tr');
         uuidRow.className = 'info-entry';
@@ -85,7 +84,7 @@
 
         let capeEntries = document.createElement('td');
         capeEntries.className = 'info-capes';
-        // capeEntries.innerHTML = `Mojang: ${profile.mojangCapes.length > 0}<br />OptiFine: ${profile.hasOptiFineCape}`;
+        // capeEntries.innerHTML = `Mojang: ${profile.mojangCapes.length > 0 ? something : else}<br />OptiFine: ${profile.hasOptiFineCape}`;
         capeEntries.innerHTML = `Mojang: (not implemented)<br />OptiFine: <a href="http://s.optifine.net/capes/${profile.username}.png">${profile.hasOptiFineCape}</a>`;
 
         capesRow.appendChild(capesCategory);
@@ -94,7 +93,7 @@
         return [uuidRow, capesRow];
     };
 
-    const buildHistoryTable = (history) => {
+    const buildHistoryTable = function (history) {
         let rows = [];
 
         for (let i = 0; i < history.length; i++) {
@@ -125,24 +124,24 @@
         }
 
         return rows;
-    }
+    };
 
     // TODO: Possibly use for quick profile sharing?
-    window.copyToClipboard = text => {
+    window.copyToClipboard = function (text) {
         navigator.clipboard.writeText(text)
             .then(() => { }, (err) => { console.error(err); });
-    }
+    };
 
     // Displays an error box, or hides it
-    const displayError = (error, hide = false) => {
+    const displayError = function (error) {
         let errorBox = document.getElementById('error-box');
 
         errorBox.innerText = error;
-        errorBox.style.visibility = hide ? 'collapse' : 'visible';
-    }
+        errorBox.style.visibility = error.length == 0 ? 'collapse' : 'visible';
+    };
 
-    // Formats a Date object into DD/MM/YYYY HH:MM:SS AM/PM
-    const formatDate = date => {
+    // Formats a Date object into dd/mm/yyyy HH:MM:SS a
+    const formatDate = function (date) {
         let month = date.getMonth() + 1;
 
         let hours = (date.getHours() + 12) % 12;
@@ -160,8 +159,8 @@
         return `${date.getDate()}/${month}/${date.getFullYear()} ${hours}:${minutes}:${seconds} ${meridiem}`;
     };
 
-    // Returns a Key-Value Pair/Map of all queries in the URL
-    const getQuery = () => {
+    // Returns a Map of Key-Value pairs from the URL query
+    const getQueries = function () {
         if (!document.location.search.startsWith('?')) return [];
 
         let map = [];

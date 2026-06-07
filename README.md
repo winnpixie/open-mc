@@ -1,8 +1,6 @@
 # open-mc
 An open-source Minecraft profile resolver.
 
-A live example can be used [here](https://www.winnpixie.com/open-mc/?q=winnpixie)
-
 ## USERNAME HISTORY IS NOW DEFUNCT
 As of September 13th, 2022, Mojang has *removed* the ability for third-parties to view the username history of players.
 See [here](https://help.minecraft.net/hc/en-us/articles/8969841895693-Username-History-API-Removal-FAQ-) for more information.
