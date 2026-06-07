@@ -19,8 +19,8 @@ function httpGet(string $url)
 
     $res = curl_exec($req);
     if (curl_errno($req)) {
-        $res = curl_error($req);
-        trigger_error($res);
+        $req_err = curl_error($req);
+        trigger_error($req_err);
     }
 
     $val = new HttpResponse($res, (int) curl_getinfo($req, CURLINFO_HTTP_CODE));
