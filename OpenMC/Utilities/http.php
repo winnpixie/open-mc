@@ -12,7 +12,7 @@ function httpGet(string $url)
         CURLOPT_HEADER => true,
         CURLOPT_SSL_VERIFYPEER => false,
         CURLOPT_SSL_VERIFYHOST => false,
-        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_FOLLOWLOCATION => false,
         CURLOPT_HTTPHEADER => array(
             'User-Agent' => 'PHP cURL (winnpixie/open-mc)'
         ),
