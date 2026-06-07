@@ -8,8 +8,8 @@ function httpGet(string $url)
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_CONNECTTIMEOUT => 15,
         CURLOPT_TIMEOUT => 15,
-        CURLOPT_HEADER => true,
-        CURLOPT_SSL_VERIFYPEER => false,
+        CURLOPT_HEADER => false,
+        CURLOPT_SSL_VERIFYPEER => true,
         CURLOPT_SSL_VERIFYHOST => false,
         CURLOPT_FOLLOWLOCATION => true,
         CURLOPT_HTTPHEADER => array(
