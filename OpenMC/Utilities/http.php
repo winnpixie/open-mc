@@ -8,11 +8,10 @@ function httpGet(string $url)
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_CONNECTTIMEOUT => 15,
         CURLOPT_TIMEOUT => 15,
-        CURLOPT_VERBOSE => true,
         CURLOPT_HEADER => true,
         CURLOPT_SSL_VERIFYPEER => false,
         CURLOPT_SSL_VERIFYHOST => false,
-        CURLOPT_FOLLOWLOCATION => false,
+        CURLOPT_FOLLOWLOCATION => true,
         CURLOPT_HTTPHEADER => array(
             'User-Agent' => 'PHP cURL (winnpixie/open-mc)'
         ),
