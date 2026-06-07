@@ -4,7 +4,7 @@ function httpGet(string $url)
 {
     $req = curl_init($url);
 
-    $cv = fopen("/tmp/curl", "rw");
+    $cv = fopen("file:///tmp/curl", "w+");
 
     curl_setopt_array($req, array(
         CURLOPT_RETURNTRANSFER => true,
